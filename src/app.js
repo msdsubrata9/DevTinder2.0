@@ -1,18 +1,21 @@
 const express = require("express");
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
 const app = express();
 
-app.use("/test", (req, res) => {
-    res.send("sending response form test");
+app.use("/admin", adminAuth);
+
+app.post("/user/login",(req, res, next)=>{
+    res.send("User loggedIn Successfully");
 })
 
-app.use("/hello", (req, res) => {
-    res.send("sending response form hello");
+app.get("/user/data", userAuth, (req, res, next)=>{
+    res.send("User data send");
 })
 
-app.use("/", (req, res) => {
-    res.send("sending response form dashboard");
-});
+app.get("/admin/getAllData",(req, res, next)=>{
+    res.send("Admin gets all the data");
+})
 
 app.listen(7777, () => {
     console.log("Server is running successfully in 7777...")
