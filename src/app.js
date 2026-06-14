@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const connectDB = require("./config/database");
 const User = require("./models/user");
@@ -6,10 +7,10 @@ const app = express();
 
 app.post("/signup", async (req, res, next) => {
     const user = new User({
-        firstName: "Subrata",
-        lastName: "Saha",
-        email: "subrata.s@gmail.com",
-        password: "Subrata@1234",
+        firstName: "Sourav",
+        lastName: "Ganguly",
+        email: "sourav.g@gmail.com",
+        password: "Sourav@1234",
     });
 
     try {
