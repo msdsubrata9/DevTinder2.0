@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
@@ -19,10 +20,20 @@ const userSchema = new Schema({
         required: true,
         unique: true,
         trim: true,
+        validate(value) {
+            if (!validator.isEmail(value)) {
+                throw new Error("Invalid Email Address");
+            };
+        }
     },
     password: {
         type: String,
         required: true,
+        validate(value) {
+            if (!validator.isStrongPassword(value)) {
+                throw new Error("Enter a Strong Password: " + value);
+            }
+        }
     },
     age: {
         type: Number,
@@ -39,6 +50,11 @@ const userSchema = new Schema({
     photoUrl: {
         type: String,
         default: "https://img.icons8.com/?size=100&id=EInDLGZwVHf7&format=png&color=000000",
+        validate(value) {
+            if (!validator.isURL(value)) {
+                throw new Error("Invalid Photo URL: " + value);
+            }
+        }
     },
     about: {
         type: String,
