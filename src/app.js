@@ -4,11 +4,14 @@ const connectDB = require("./config/database");
 const User = require("./models/user");
 const { validateSignUpData } = require("./utils/validations");
 const bcrypt = require("bcrypt");
-const validator = require("validator")
+const validator = require("validator");
+const cookieParser = require("cookie-parser");
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req, res, next) => {
     try {
@@ -49,9 +52,36 @@ app.post("/login", async (req, res, next) => {
         if (!isPasswordCorrect) {
             throw new Error("Invalid credentials");
         }
+
+        // Create a JWT Token
+        const token = await jwt.sign({_id: user._id}, process.env.JWT_PRIVATE_KEY);
+
+        // send the token to the user when it logged in successfully
+        res.cookie("token", token);
         res.status(200).send("Login Successful");
     } catch (error) {
         res.status(400).send("ERROR: " + error.message);
+    }
+})
+
+app.get("/profile", async (req, res) => {
+    try {
+        const cookies = req.cookies;
+        const {token} = cookies;
+        const decodeMessage = await jwt.verify(
+            token,
+            process.env.JWT_PRIVATE_KEY
+        );
+
+        const {_id} = decodeMessage;
+
+        const user = await User.findOne({_id});
+        if(!user){
+            throw new Error("User Not Found!! Please create new User!!")
+        }
+        res.send(user);
+    } catch (error) {
+        console.error("Invalid Token" + error.message);
     }
 })
 
